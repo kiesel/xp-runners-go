@@ -12,11 +12,15 @@ func (this *CompositeConfigSource) GetUse() []string {
   return []string{}
 }
 
-func NewComposite(sources ...ConfigSource) CompositeConfigSource {
-  instance := CompositeConfigSource{}
+func (this *CompositeConfigSource) GetExecutable() string {
+  return ""
+}
+
+func NewCompositeConfigSource(sources ...ConfigSource) ConfigSource {
+  instance := &CompositeConfigSource{}
 
   for _, add := range sources {
-    if sources.Valid() {
+    if add.Valid() {
       instance.sources = append(instance.sources, add)
     }
   }
