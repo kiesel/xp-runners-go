@@ -1,10 +1,9 @@
 package main 
 
 import (
-  "fmt"
   "github.com/xp-framework/xp-runners-go/runner"
 )
 
 func main() {
-  fmt.Println("Hello World.")
+  runner.Execute(".", "class", "xp.runtime.Version", []string{ "." }, []string{})
 }

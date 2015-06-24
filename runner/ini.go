@@ -1,7 +1,9 @@
 package runner
 
 import (
+  "fmt"
   "strings"
+  "reflect"
   "gopkg.in/ini.v1"
 )
 
@@ -11,15 +13,23 @@ type IniConfigSource struct {
 }
 
 func (this *IniConfigSource) Valid() bool {
-  return true
+  return this.ini != nil
 }
 
 func (this *IniConfigSource) GetUse() []string {
   return this.ini.Section("").Key("use").Strings(";")
 }
 
-func (this *IniConfigSource) GetExecutable() string {
+func (this *IniConfigSource) GetRuntime() string {
   return this.ini.Section("").Key("rt").String()
+}
+
+func (this *IniConfigSource) GetExecutable(runtime string) string {
+  return this.ini.Section("").Key("rt").String()
+}
+
+func (this *IniConfigSource) String() string {
+  return reflect.TypeOf(this).String() + "{ filename: " + this.filename + " }"
 }
 
 func IniConfigSourceFromFile(paths ...string) *IniConfigSource {
@@ -35,7 +45,11 @@ func IniConfigSourceFromFile(paths ...string) *IniConfigSource {
 
   ini, err := ini.Load(path)
   if err != nil {
-    panic("Cannot load ini from " + path)
+    fmt.Println(err.Error())
+    return &IniConfigSource{
+      filename: path,
+      ini: nil,
+    }
   }
 
   instance := &IniConfigSource{

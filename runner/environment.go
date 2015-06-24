@@ -3,6 +3,7 @@ package runner
 import (
   "os"
   "strings"
+  "reflect"
 )
 
 type EnvironmentConfigSource struct {
@@ -28,8 +29,16 @@ func (this *EnvironmentConfigSource) GetUse() []string {
   return use
 }
 
-func (this *EnvironmentConfigSource) GetExecutable() string {
+func (this *EnvironmentConfigSource) GetRuntime() string {
   return os.Getenv("XP_RT")
+}
+
+func (this *EnvironmentConfigSource) GetExecutable(runtime string) string {
+  return ""
+}
+
+func (this *EnvironmentConfigSource) String() string {
+  return reflect.TypeOf(this).String() + "{}"
 }
 
 func NewEnvironmentConfigSource() *EnvironmentConfigSource {

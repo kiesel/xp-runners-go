@@ -3,5 +3,7 @@ package runner
 type ConfigSource interface {
   Valid() bool
   GetUse() []string
-  GetExecutable() string
+  GetRuntime() string
+  GetExecutable(runtime string) string
+  String() string
 }
