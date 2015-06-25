@@ -29,6 +29,37 @@ func (this *IniConfigSource) GetExecutable(runtime string) string {
     this.ini.Section("runtime").Key("default").String())
 }
 
+func (this *IniConfigSource) GetArgs(runtime string) map[string]string {
+  args := make(map[string]string, 0)
+
+  mergeWith(args, this.argsInSection("runtime@" + runtime))
+  mergeWith(args, this.argsInSection("runtime"))
+
+  return args
+}
+
+func (this *IniConfigSource) argsInSection(section string) map[string]string {
+  args := make(map[string]string, 0)
+
+  for _, key := range this.ini.Section(section).Keys() {
+    if "default" == key.Name() || strings.HasPrefix(key.Name(), "extension.") {
+      continue
+    }
+
+    args[key.Name()]= key.String()
+  }
+
+  return args
+}
+
+func mergeWith(args map[string]string, with map[string]string) {
+  for key, value := range with {
+    if _, ok := args[key]; ok == false {
+      args[key]= value
+    }
+  }
+}
+
 func (this *IniConfigSource) String() string {
   return reflect.TypeOf(this).String() + "{ filename: " + this.filename + " }"
 }

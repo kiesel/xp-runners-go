@@ -45,6 +45,19 @@ func (this *CompositeConfigSource) GetExecutable(runtime string) string {
   return "php"
 }
 
+func (this *CompositeConfigSource) GetArgs(runtime string) map[string]string {
+  args := make(map[string]string, 0)
+  for _, member := range this.sources {
+    for key, value := range member.GetArgs(runtime) {
+      if _, ok := args[key]; ok == false {
+        args[key]= value
+      }
+    }
+  }
+
+  return args
+}
+
 func (this *CompositeConfigSource) String() string {
   val := reflect.TypeOf(this).String() + "{\n"
   for _, elem := range this.sources {

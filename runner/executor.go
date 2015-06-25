@@ -43,6 +43,10 @@ func newProcess(baseDir, runner, tool string, includes, args []string) {
     "-d", "magic_quotes_gpc=0",
   }
 
+  for key, value := range configs.GetArgs(runtime) {
+    argv = append(argv, "-d", key + "=\"" + value + "\"")
+  }
+
   fmt.Println("argv := ", argv)
   fmt.Println("runt := ", runtime)
   fmt.Println("exec := ", executable)

@@ -37,6 +37,10 @@ func (this *EnvironmentConfigSource) GetExecutable(runtime string) string {
   return ""
 }
 
+func (this *EnvironmentConfigSource) GetArgs(runtime string) map[string]string {
+  return map[string]string{}
+}
+
 func (this *EnvironmentConfigSource) String() string {
   return reflect.TypeOf(this).String() + "{}"
 }

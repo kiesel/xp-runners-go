@@ -5,5 +5,6 @@ type ConfigSource interface {
   GetUse() []string
   GetRuntime() string
   GetExecutable(runtime string) string
+  GetArgs(runtime string) map[string]string
   String() string
 }
