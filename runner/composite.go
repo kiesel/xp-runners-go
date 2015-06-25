@@ -13,9 +13,13 @@ func (this *CompositeConfigSource) Valid() bool {
 }
 
 func (this *CompositeConfigSource) GetUse() []string {
-  uses := make([]string, 10)
+  uses := make([]string, 0)
   for _, member := range this.sources {
-    uses = append(uses, member.GetUse()...)
+    for _, element := range member.GetUse() {
+      if element != "" {
+        uses = append(uses, element)
+      }
+    }
   }
 
   return uses
@@ -28,11 +32,17 @@ func (this *CompositeConfigSource) GetRuntime() string {
     }
   }
 
-  panic("Cannot determine runtime from " + this.String())
+  return "default"
 }
 
 func (this *CompositeConfigSource) GetExecutable(runtime string) string {
-  return ""
+  for _, member := range this.sources {
+    if executable := member.GetExecutable(runtime); executable != "" {
+      return executable
+    }
+  }
+
+  return "php"
 }
 
 func (this *CompositeConfigSource) String() string {

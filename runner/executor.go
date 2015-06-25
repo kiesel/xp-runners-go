@@ -35,10 +35,10 @@ func newProcess(baseDir, runner, tool string, includes, args []string) {
 
   argv := []string {
     "-C", "-q", 
-    "-d", fmt.Sprintf("include_path=\"%[1]s%[0]s%[1]s%[1]s%[2]s\"",
-      strings.Join(useXp, ";"),
-      ";",
-      strings.Join(includes, ";"),
+    "-d", fmt.Sprintf("include_path=\".%[2]s%[1]s%[2]s%[2]s%[3]s\"",
+      strings.Join(useXp, string(os.PathListSeparator)),
+      string(os.PathListSeparator),
+      strings.Join(includes, string(os.PathListSeparator)),
     ),
     "-d", "magic_quotes_gpc=0",
   }
@@ -46,6 +46,7 @@ func newProcess(baseDir, runner, tool string, includes, args []string) {
   fmt.Println("argv := ", argv)
   fmt.Println("runt := ", runtime)
   fmt.Println("exec := ", executable)
+  fmt.Println("usexp:= ", useXp)
 
   // cmd := exec.Command("")
 

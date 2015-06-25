@@ -25,7 +25,8 @@ func (this *IniConfigSource) GetRuntime() string {
 }
 
 func (this *IniConfigSource) GetExecutable(runtime string) string {
-  return this.ini.Section("").Key("rt").String()
+  return this.ini.Section("runtime@" + runtime).Key("default").MustString(
+    this.ini.Section("runtime").Key("default").String())
 }
 
 func (this *IniConfigSource) String() string {
