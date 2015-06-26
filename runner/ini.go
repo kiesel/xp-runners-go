@@ -1,6 +1,7 @@
 package runner
 
 import (
+  "os"
   "fmt"
   "strings"
   "reflect"
@@ -17,7 +18,12 @@ func (this *IniConfigSource) Valid() bool {
 }
 
 func (this *IniConfigSource) GetUse() []string {
-  return this.ini.Section("").Key("use").Strings(";")
+  ret := []string {}
+  for _, element := range this.ini.Section("").Key("use").Strings(string(os.PathListSeparator)) {
+    ret = append(ret, strings.Replace(element, "~", os.Getenv("HOME"), 1))
+  }
+
+  return ret
 }
 
 func (this *IniConfigSource) GetRuntime() string {

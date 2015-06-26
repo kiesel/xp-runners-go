@@ -4,7 +4,7 @@ import (
   "fmt"
   "strings"
   "os"
-  // "os/exec"
+  "path/filepath"
 )
 
 type Executor struct {
@@ -47,12 +47,39 @@ func newProcess(baseDir, runner, tool string, includes, args []string) {
     argv = append(argv, "-d", key + "=\"" + value + "\"")
   }
 
-  fmt.Println("argv := ", argv)
-  fmt.Println("runt := ", runtime)
-  fmt.Println("exec := ", executable)
-  fmt.Println("usexp:= ", useXp)
+  var runnerPath string
+  if runnerPath = locate(useXp, "tools/" + runner + ".php"); runnerPath != "" {
+    // noop
+  } else if runnerPath = locate([]string { baseDir }, runner + "-main.php"); runnerPath != "" {
+    argv = append(argv, "-d", "encoding=\"utf-7\"")
+  } else {
+    panic("Cannot find tool in " + strings.Join(useXp, string(os.PathListSeparator)))
+  }
+
+  fmt.Println("argv   := ", argv)
+  fmt.Println("runt   := ", runtime)
+  fmt.Println("exec   := ", executable)
+  fmt.Println("usexp  := ", useXp)
+  fmt.Println("runner := ", runnerPath)
 
   // cmd := exec.Command("")
 
   // return cmd
+}
+
+func locate(paths []string, entry string) string {
+  for _, path := range paths {
+    abs := filepath.Join(path, entry)
+    fmt.Println("Checking", abs)
+    stat, err := os.Stat(abs)
+    if err != nil {
+      continue
+    }
+
+    if !stat.IsDir() {
+      return abs
+    }
+  }
+
+  return ""
 }

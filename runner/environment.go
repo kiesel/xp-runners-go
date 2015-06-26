@@ -22,8 +22,8 @@ func (this *EnvironmentConfigSource) GetUse() []string {
   }
   use = append(use, wd)
 
-  for _, element := range strings.Split(os.Getenv("USE_XP"), ";") {
-    use = append(use, element)
+  for _, element := range strings.Split(os.Getenv("USE_XP"), string(os.PathListSeparator)) {
+    use = append(use, strings.Replace(element, "~", os.Getenv("HOME"), 1))
   }
 
   return use
