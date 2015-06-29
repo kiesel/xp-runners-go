@@ -13,7 +13,7 @@ func (this *CompositeConfigSource) Valid() bool {
 }
 
 func (this *CompositeConfigSource) GetUse() []string {
-  uses := make([]string, 0)
+  uses := []string{}
   for _, member := range this.sources {
     for _, element := range member.GetUse() {
       if element != "" {

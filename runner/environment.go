@@ -6,15 +6,14 @@ import (
   "reflect"
 )
 
-type EnvironmentConfigSource struct {
-}
+type EnvironmentConfigSource struct {}
 
 func (this *EnvironmentConfigSource) Valid() bool {
   return true
 }
 
 func (this *EnvironmentConfigSource) GetUse() []string {
-  use := make([]string, 10)
+  use := []string{}
 
   wd, err := os.Getwd()
   if err != nil {
