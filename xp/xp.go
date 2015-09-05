@@ -4,7 +4,8 @@ import (
   "os"
   "path/filepath"
   "fmt"
-  "github.com/xp-framework/xp-runners-go/runner"
+  "log"
+  "github.com/kiesel/xp-runners-go/runner"
 )
 
 func dir(path string) (string, error) {
@@ -23,11 +24,15 @@ func dir(path string) (string, error) {
 }
 
 func main() {
+  if dbg := os.Getenv("XP_DBG"); dbg != "" {
+    log.SetFlags(log.Lshortfile)
+    log.SetOutput(os.Stdout)
+  }
+
   base, err := dir(os.Args[0])
   if err != nil {
     panic(err.Error())
   }
 
-  fmt.Println(base)
   runner.Execute(base, "class", "xp.runtime.Version", []string{ "." }, []string{})
 }

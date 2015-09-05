@@ -2,9 +2,9 @@ package runner
 
 import (
   "os"
-  "fmt"
   "strings"
   "reflect"
+  "log"
   "gopkg.in/ini.v1"
 )
 
@@ -83,13 +83,13 @@ func IniConfigSourceFromFile(paths ...string) *IniConfigSource {
 
   ini, err := ini.Load(path)
   if err != nil {
-    fmt.Println(err.Error())
     return &IniConfigSource{
       filename: path,
       ini: nil,
     }
   }
 
+  log.Println("Using as XP configuration source: ", path)
   instance := &IniConfigSource{
     filename: path,
     ini: ini,

@@ -2,6 +2,7 @@ package runner
 
 import (
   "fmt"
+  "log"
   "strings"
   "os"
   "os/exec"
@@ -77,11 +78,11 @@ func newProcess(baseDir, runner, tool string, includes, args []string) *exec.Cmd
 
   argv = append(argv, runnerPath, tool)
 
-  fmt.Println("argv   := ", argv)
-  fmt.Println("runt   := ", runtime)
-  fmt.Println("exec   := ", executable)
-  fmt.Println("usexp  := ", useXp)
-  fmt.Println("runner := ", runnerPath)
+  log.Println("argv   := ", argv)
+  log.Println("runt   := ", runtime)
+  log.Println("exec   := ", executable)
+  log.Println("usexp  := ", useXp)
+  log.Println("runner := ", runnerPath)
 
   return exec.Command(executable, argv...)
 }
@@ -89,7 +90,6 @@ func newProcess(baseDir, runner, tool string, includes, args []string) *exec.Cmd
 func locate(paths []string, entry string) string {
   for _, path := range paths {
     abs := filepath.Join(path, entry)
-    fmt.Println("Checking", abs)
     stat, err := os.Stat(abs)
     if err != nil {
       continue
