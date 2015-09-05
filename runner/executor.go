@@ -77,6 +77,9 @@ func newProcess(baseDir, runner, tool string, includes, args []string) *exec.Cmd
   }
 
   argv = append(argv, runnerPath, tool)
+  if 0 < len(args) {
+    argv = append(argv, args...)
+  }
 
   log.Println("argv   := ", argv)
   log.Println("runt   := ", runtime)
