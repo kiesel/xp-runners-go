@@ -2,7 +2,6 @@ package runner
 
 import (
   "fmt"
-  "log"
   "strings"
   "os"
   "os/exec"
@@ -29,12 +28,16 @@ func Execute(baseDir, runner, tool string, includes, args []string) int {
 
       // This is supposed to work at least on Linux & Windows
       if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
+        Log.Warn("Invocation ended w/ exit status ", status.ExitStatus())
         return status.ExitStatus()
       }
     }
+
+    Log.Warn("Error invoking: ", err.Error())
   }
 
-  return -1
+  Log.Info("Invocation ended sucessfully w/ exit status ", 0)
+  return 0
 }
 
 func newProcess(baseDir, runner, tool string, includes, args []string) *exec.Cmd {
@@ -81,11 +84,11 @@ func newProcess(baseDir, runner, tool string, includes, args []string) *exec.Cmd
     argv = append(argv, args...)
   }
 
-  log.Println("argv   := ", argv)
-  log.Println("runt   := ", runtime)
-  log.Println("exec   := ", executable)
-  log.Println("usexp  := ", useXp)
-  log.Println("runner := ", runnerPath)
+  Log.Debug("argv   := ", argv)
+  Log.Debug("runt   := ", runtime)
+  Log.Debug("exec   := ", executable)
+  Log.Debug("usexp  := ", useXp)
+  Log.Debug("runner := ", runnerPath)
 
   return exec.Command(executable, argv...)
 }

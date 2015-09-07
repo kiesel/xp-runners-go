@@ -4,7 +4,6 @@ import (
   "os"
   "strings"
   "reflect"
-  "log"
   "gopkg.in/ini.v1"
 )
 
@@ -89,7 +88,7 @@ func IniConfigSourceFromFile(paths ...string) *IniConfigSource {
     }
   }
 
-  log.Println("Using as XP configuration source: ", path)
+  Log.Debug("Using as XP configuration source: ", path)
   instance := &IniConfigSource{
     filename: path,
     ini: ini,

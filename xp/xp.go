@@ -3,7 +3,6 @@ package main
 import (
   "os"
   "path/filepath"
-  "log"
   "github.com/kiesel/xp-runners-go/runner"
 )
 
@@ -23,10 +22,6 @@ func dir(path string) (string, error) {
 }
 
 func main() {
-  if dbg := os.Getenv("XP_DBG"); dbg != "" {
-    log.SetFlags(log.Lshortfile)
-    log.SetOutput(os.Stdout)
-  }
 
   base, err := dir(os.Args[0])
   if err != nil {
@@ -88,7 +83,7 @@ ArgsLoop:
       }
     }
 
-    args = os.Args[shift:]
+    args = os.Args[shift + 1:]
   }
 
   runner.Execute(base, "class", tool, includes, args)
