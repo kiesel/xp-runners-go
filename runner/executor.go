@@ -11,7 +11,19 @@ import (
 
 type Executor struct {}
 
-func Execute(baseDir, runner, tool string, includes, args []string) int {
+type Context struct {
+  BaseDir string
+  Runner string
+  Tool string
+  Includes []string
+  Args []string
+}
+
+func Execute(c Context) int {
+  return execute(c.BaseDir, c.Runner, c.Tool, c.Includes, c.Args)
+}
+
+func execute(baseDir, runner, tool string, includes, args []string) int {
   cmd := newProcess(baseDir, runner, tool, includes, args)
 
   cmd.Stdout = os.Stdout

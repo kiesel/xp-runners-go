@@ -2,89 +2,72 @@ package main
 
 import (
   "os"
-  "path/filepath"
   "github.com/kiesel/xp-runners-go/runner"
 )
 
-func dir(path string) (string, error) {
-  path, err := filepath.EvalSymlinks(path)
-
-  if err != nil {
-    return "", err
+func main() {
+  context := runner.Context {
+    BaseDir : runner.Base(),
+    Runner : "class",
+    Includes : []string { "." },
   }
+  parseArgs(&context, os.Args)
 
-  path, err = filepath.Abs(path)
-  if err != nil {
-    return "", err
-  }
-
-  return filepath.Dir(path), nil
+  runner.Execute(context)
 }
 
-func main() {
-
-  base, err := dir(os.Args[0])
-  if err != nil {
-    panic(err.Error())
+func parseArgs(c *runner.Context, in []string) {
+  if 1 == len(in) {
+    c.Tool = "xp.runtime.ShowResource"
+    c.Args = []string { "usage.txt", "255" }
+    return
   }
-
-  var tool string
-  var args []string
 
   shift := 0
-  includes := []string { "." }
-
-  if 1 == len(os.Args) {
-    tool = "xp.runtime.ShowResource"
-    args = []string { "usage.txt", "255" }
-  } else {
 ArgsLoop:
-    for i, val := range os.Args {
-      if 0 == i {
-        continue
-      }
-
-      switch val {
-        case "-v":
-          tool = "xp.runtime.Version"
-          shift += 1
-          break
-
-        case "-e":
-          tool = "xp.runtime.Evaluate"
-          shift += 1
-          break
-
-        case "-w", "-d":
-          tool = "xp.runtime.Dump"
-          break
-
-        case "-r":
-          tool = "xp.runtime.Reflect"
-          shift += 1
-          break
-
-        case "-xar":
-          tool = "xp.runtime.Xar"
-          shift += 1
-          break
-
-        case "-cp":
-          includes = append(includes, os.Args[i + 1])
-          shift += 2
-          break
-
-        default:
-          if val[0] == '-' {
-            panic("*** Invalid argument " + val)
-          }
-
-          break ArgsLoop
-      }
+  for i, val := range in {
+    if 0 == i {
+      continue
     }
 
-    args = os.Args[shift + 1:]
+    switch val {
+      case "-v":
+        c.Tool = "xp.runtime.Version"
+        shift += 1
+        break
+
+      case "-e":
+        c.Tool = "xp.runtime.Evaluate"
+        shift += 1
+        break
+
+      case "-w", "-d":
+        c.Tool = "xp.runtime.Dump"
+        break
+
+      case "-r":
+        c.Tool = "xp.runtime.Reflect"
+        shift += 1
+        break
+
+      case "-xar":
+        c.Tool = "xp.runtime.Xar"
+        shift += 1
+        break
+
+      case "-cp":
+        c.Includes = append(c.Includes, in[i + 1])
+        shift += 2
+        break
+
+      default:
+        if val[0] == '-' {
+          panic("*** Invalid argument " + val)
+        }
+
+        break ArgsLoop
+    }
   }
 
-  runner.Execute(base, "class", tool, includes, args)
+  c.Args = in[shift + 1:]
 }
