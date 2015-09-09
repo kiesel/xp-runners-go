@@ -52,3 +52,54 @@ func TestParseArgs_dump_write(t *testing.T) {
   parseArgs(&c, []string {"xp.go", "-w", "true"})
   expectTool(c, "xp.runtime.Dump", t)
 }
+
+func TestParseArgs_default_classpath(t *testing.T) {
+  c := runner.Context {}
+  parseArgs(&c, []string {"xp.go", "-e", "var_dump('Hello.');"})
+
+  if 0 != len(c.Includes) {
+    t.Errorf("Expected 0 include path, got: %d", len(c.Includes))
+  }
+}
+
+func TestParseArgs_extended_classpath(t *testing.T) {
+  c := runner.Context {}
+  parseArgs(&c, []string {"xp.go", "-cp", "foo.xar", "-e", "var_dump('Hello.');"})
+
+  if 1 != len(c.Includes) {
+    t.Errorf("Expected 1 include path, got: %d", len(c.Includes))
+  }
+}
+
+func TestParseArgs_extended_classpath_twice(t *testing.T) {
+  c := runner.Context {}
+  parseArgs(&c, []string {"xp.go", "-cp", "foo.xar", "-cp", "bar.xar", "-e", "var_dump(true);"})
+
+  if 2 != len(c.Includes) {
+    t.Error("Expected 2 include paths, got:", c.Includes)
+  }
+
+  expectTool(c, "xp.runtime.Evaluate", t)
+  if 1 != len(c.Args) || c.Args[0] != "var_dump(true);" {
+    t.Error("Invalid arguments, expected 'var_dump(true);', got:", c.Args)
+  }
+}
+
+func TestParseArgs_invalid_command(t *testing.T) {
+  c := runner.Context {}
+  defer func() {
+    if e := recover(); e != nil {
+
+      if e != "*** Invalid argument -foo" {
+        // Unexpected error recovered
+        panic("Recovered unexpected error.")
+      }
+
+      // Otherwise, all good.
+    }
+  }()
+  parseArgs(&c, []string {"xp.go", "-foo", "bar"})
+
+  // Should not be reached:
+  t.Error("Invalid command went through:(")
+}

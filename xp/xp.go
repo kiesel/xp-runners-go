@@ -24,37 +24,45 @@ func parseArgs(c *runner.Context, in []string) {
   }
 
   shift := 0
+  skip := 0
+  loop := in[1:]
 ArgsLoop:
-  for i, val := range in[1:] {
+  for i, val := range loop {
+    if skip > 0 {
+      skip -= 1
+      continue
+    }
+
     switch val {
       case "-v":
         c.Tool = "xp.runtime.Version"
         shift += 1
-        break
+        continue
 
       case "-e":
         c.Tool = "xp.runtime.Evaluate"
         shift += 1
-        break
+        continue
 
       case "-w", "-d":
         c.Tool = "xp.runtime.Dump"
-        break
+        continue
 
       case "-r":
         c.Tool = "xp.runtime.Reflect"
         shift += 1
-        break
+        continue
 
       case "-xar":
         c.Tool = "xp.runtime.Xar"
         shift += 1
-        break
+        continue
 
       case "-cp":
-        c.Includes = append(c.Includes, in[i + 1])
+        c.Includes = append(c.Includes, loop[i + 1])
         shift += 2
-        break
+        skip = 1
+        continue
 
       default:
         if val[0] == '-' {
@@ -65,5 +73,5 @@ ArgsLoop:
     }
   }
 
-  c.Args = in[shift + 1:]
+  c.Args = loop[shift:]
 }
