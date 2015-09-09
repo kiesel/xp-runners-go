@@ -25,11 +25,7 @@ func parseArgs(c *runner.Context, in []string) {
 
   shift := 0
 ArgsLoop:
-  for i, val := range in {
-    if 0 == i {
-      continue
-    }
-
+  for i, val := range in[1:] {
     switch val {
       case "-v":
         c.Tool = "xp.runtime.Version"

@@ -31,4 +31,24 @@ func TestParseArgs_evaluate(t *testing.T) {
   c := runner.Context {}
   parseArgs(&c, []string {"xp.go", "-e", "var_dump('Hello World');"})
   expectTool(c, "xp.runtime.Evaluate", t)
+
+  if len(c.Args) != 1 {
+    t.Errorf("Invalid number of arguments: %d", len(c.Args))
+  }
+
+  if c.Args[0] != "var_dump('Hello World');" {
+    t.Error("Invalid arguments.")
+  }
+}
+
+func TestParseArgs_dump(t *testing.T) {
+  c := runner.Context {}
+  parseArgs(&c, []string {"xp.go", "-d", "true"})
+  expectTool(c, "xp.runtime.Dump", t)
+}
+
+func TestParseArgs_dump_write(t *testing.T) {
+  c := runner.Context {}
+  parseArgs(&c, []string {"xp.go", "-w", "true"})
+  expectTool(c, "xp.runtime.Dump", t)
 }
