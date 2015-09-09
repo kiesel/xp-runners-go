@@ -6,5 +6,11 @@ import (
 )
 
 func main() {
-  runner.Execute(runner.Base(), "class", "xp.command.Runner", []string{ "." }, os.Args[1:])
+  runner.Execute(runner.Context {
+    BaseDir : runner.Base(),
+    Runner : "class",
+    Tool : "xp.command.Runner",
+    Includes : []string { "." },
+    Args : os.Args[1:],
+  })
 }
