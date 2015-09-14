@@ -5,7 +5,6 @@ import (
   "strings"
   "os"
   "os/exec"
-  "path/filepath"
   "syscall"
 )
 
@@ -52,21 +51,16 @@ func execute(baseDir, runner, tool string, includes, args []string) int {
   return 0
 }
 
-func newProcess(baseDir, runner, tool string, includes, args []string) *exec.Cmd {
-  configs := NewCompositeConfigSource(
-    NewEnvironmentConfigSource(),
-    IniConfigSourceFromFile(".", "xp.ini"),
-    IniConfigSourceFromFile(os.Getenv("HOME"), ".xp.ini"),
-    IniConfigSourceFromFile(baseDir, "xp.ini"),
-  )
-
+func buildArgv(configs ConfigSource, baseDir, runner, tool string, includes, args []string) []string {
   useXp := configs.GetUse()
-  runtime := configs.GetRuntime()
-  executable := configs.GetExecutable(runtime)
+  Log.Debug("usexp  := ", useXp)
 
   if 0 == len(useXp) {
     panic("Cannot determine use_xp setting from " + configs.String())
   }
+
+  runtime := configs.GetRuntime()
+  Log.Debug("runt   := ", runtime)
 
   argv := []string {
     "-C", "-q", 
@@ -83,9 +77,11 @@ func newProcess(baseDir, runner, tool string, includes, args []string) *exec.Cmd
   }
 
   var runnerPath string
-  if runnerPath = locate(useXp, "tools/" + runner + ".php"); runnerPath != "" {
+  if runnerPath = configs.Locate(useXp, "tools/" + runner + ".php"); runnerPath != "" {
+    Log.Debug("Detected runner of XP < 6.0")
     // noop
-  } else if runnerPath = locate([]string { baseDir }, runner + "-main.php"); runnerPath != "" {
+  } else if runnerPath = configs.Locate([]string { baseDir }, runner + "-main.php"); runnerPath != "" {
+    Log.Debug("Detected runner of XP >= 6.0, adding encoding information.")
     argv = append(argv, "-d", "encoding=\"utf-7\"")
   } else {
     panic("Cannot find tool in " + strings.Join(useXp, string(os.PathListSeparator)))
@@ -96,27 +92,24 @@ func newProcess(baseDir, runner, tool string, includes, args []string) *exec.Cmd
     argv = append(argv, args...)
   }
 
-  Log.Debug("argv   := ", argv)
-  Log.Debug("runt   := ", runtime)
-  Log.Debug("exec   := ", executable)
-  Log.Debug("usexp  := ", useXp)
   Log.Debug("runner := ", runnerPath)
 
-  return exec.Command(executable, argv...)
+  return argv
 }
 
-func locate(paths []string, entry string) string {
-  for _, path := range paths {
-    abs := filepath.Join(path, entry)
-    stat, err := os.Stat(abs)
-    if err != nil {
-      continue
-    }
+func newProcess(baseDir, runner, tool string, includes, args []string) *exec.Cmd {
+  configs := NewCompositeConfigSource(
+    NewEnvironmentConfigSource(),
+    IniConfigSourceFromFile(".", "xp.ini"),
+    IniConfigSourceFromFile(os.Getenv("HOME"), ".xp.ini"),
+    IniConfigSourceFromFile(baseDir, "xp.ini"),
+  )
 
-    if !stat.IsDir() {
-      return abs
-    }
-  }
+  executable := configs.GetExecutable(configs.GetRuntime())
+  Log.Debug("exec   := ", executable)
 
-  return ""
+  argv := buildArgv(configs, baseDir, runner, tool, includes, args)
+  Log.Debug("cmdline := ", argv)
+
+  return exec.Command(executable, argv...)
 }
