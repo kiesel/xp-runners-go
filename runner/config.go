@@ -6,5 +6,6 @@ type ConfigSource interface {
   GetRuntime() string
   GetExecutable(runtime string) string
   GetArgs(runtime string) map[string]string
+  Locate([]string, string) string
   String() string
 }

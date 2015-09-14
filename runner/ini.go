@@ -4,6 +4,7 @@ import (
   "os"
   "strings"
   "reflect"
+  "path/filepath"
   "gopkg.in/ini.v1"
 )
 
@@ -63,6 +64,22 @@ func mergeWith(args map[string]string, with map[string]string) {
       args[key]= value
     }
   }
+}
+
+func (this *IniConfigSource) Locate(paths []string, entry string) string {
+  for _, path := range paths {
+    abs := filepath.Join(path, entry)
+    stat, err := os.Stat(abs)
+    if err != nil {
+      continue
+    }
+
+    if !stat.IsDir() {
+      return abs
+    }
+  }
+
+  return ""
 }
 
 func (this *IniConfigSource) String() string {

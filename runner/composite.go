@@ -58,6 +58,16 @@ func (this *CompositeConfigSource) GetArgs(runtime string) map[string]string {
   return args
 }
 
+func (this *CompositeConfigSource) Locate(paths []string, entry string) string {
+  for _, member := range this.sources {
+    if location := member.Locate(paths, entry); location != "" {
+      return location
+    }
+  }
+
+  return ""
+}
+
 func (this *CompositeConfigSource) String() string {
   val := reflect.TypeOf(this).String() + "{\n"
   for _, elem := range this.sources {
