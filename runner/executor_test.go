@@ -5,6 +5,22 @@ import (
   "reflect"
 )
 
+type Testing struct {
+  *testing.T
+}
+
+func (this *Testing) equalSlices(a, b []string) {
+  if len(a) != len(b) {
+    this.Error("Difference slice sizes, expected same length!")
+  }
+
+  for position, value := range a {
+    if value != b[position] {
+      this.Errorf("Inequality at position %d (\"%s\" / \"%s\")", position, value, b[position])
+    }
+  }
+}
+
 type DummyConfig struct {
 }
 
@@ -48,13 +64,6 @@ func TestBuildArgv(t *testing.T) {
 
   expect := []string {"-C", "-q", "-d", "include_path=\".:/path/to/xp::.\"", "-d", "magic_quotes_gpc=0", "/path/to/xp/tools/class.php", "xp.runtime.Version"}
 
-  if len(argv) != len(expect) {
-    t.Fail()
-  }
-
-  for pos, val := range argv {
-    if val != expect[pos] {
-      t.Errorf("Difference at position %d (\"%s\")", pos, val)
-    }
-  }
+  test := Testing{t}
+  test.equalSlices(argv, expect)
 }
